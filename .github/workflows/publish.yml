@@ -23,6 +23,8 @@ jobs:
           cache: 'gradle'
       - name: Build jar
         run: ./gradlew --no-daemon shadowJar
+      - name: Build jar
+        run: ls -a
       - name: Run changelog cli action
         uses: monta-app/changelog-cli-action@main
         with:
@@ -37,7 +39,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ./build/libs/otel-extension.jar
+          file: /build/libs/otel-extension.jar
           asset_name: otel-extension
           tag: ${{ github.ref }}
           overwrite: true
