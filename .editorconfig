@@ -1,0 +1,8 @@
+[*.{kt,kts}]
+indent_style = space
+indent_size = 4
+ij_any_if_brace_force = always
+ktlint_code_style = intellij_idea
+ktlint_disabled_rules = no-wildcard-imports, enum-entry-name-case
+ij_kotlin_allow_trailing_comma_on_call_site = false
+ij_kotlin_allow_trailing_comma = false

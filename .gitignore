@@ -1,0 +1,25 @@
+# Ignore idea folder
+.idea
+
+# Gradle Ignores
+.gradle
+**/build/
+!src/**/build/
+gradle-app.setting
+!gradle-wrapper.jar
+.serverless
+node_modules
+
+# Ignore Gradle build output directory
+build
+out/
+
+# Ignore build path
+# server/src/main/resources/public
+# !server/src/main/resources/public/hello.txt
+
+# Ignore all .env files (minus the example)
+.env.*
+!.env.example
+
+.DS_store
