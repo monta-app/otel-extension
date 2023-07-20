@@ -37,12 +37,28 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
         autoConfiguration.addTracerProviderCustomizer((sdkTracerProviderBuilder, configProperties) ->
                 sdkTracerProviderBuilder.setSampler(
                         Sampler.parentBased(
-                                RuleBasedRoutingSampler.builder(SpanKind.SERVER, Sampler.alwaysOn())
+                                RuleBasedRoutingSampler.builder(SpanKind.SERVER, getSampler())
                                         .drop(SemanticAttributes.HTTP_TARGET, "/health*")
                                         .drop(SemanticAttributes.HTTP_TARGET, "/prometheus*")
                                         .build()
                         )
                 )
         );
+    }
+
+    private static Sampler getSampler() {
+
+        String otelTracesSamplerArg = System.getenv("OTEL_TRACES_SAMPLER_ARG");
+
+        if (otelTracesSamplerArg != null) {
+            try {
+                double ratio = Double.parseDouble(otelTracesSamplerArg);
+                return Sampler.traceIdRatioBased(ratio);
+            } catch (Exception exception) {
+                return Sampler.alwaysOff();
+            }
+        } else {
+            return Sampler.alwaysOn();
+        }
     }
 }
