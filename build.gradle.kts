@@ -1,9 +1,9 @@
 val kotlinVersion: String by project
 
 plugins {
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "1.9.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.jlleitschuh.gradle.ktlint") version "11.4.2"
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.0"
 }
 
 version = "1.0.0"
