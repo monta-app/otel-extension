@@ -6,8 +6,8 @@ import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
-import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
-import io.opentelemetry.semconv.trace.attributes.SemanticAttributes;
+import io.opentelemetry.semconv.ResourceAttributes;
+import io.opentelemetry.semconv.SemanticAttributes;
 
 import java.util.UUID;
 
@@ -38,8 +38,9 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 sdkTracerProviderBuilder.setSampler(
                         Sampler.parentBased(
                                 RuleBasedRoutingSampler.builder(SpanKind.SERVER, getSampler())
-                                        .drop(SemanticAttributes.HTTP_TARGET, "/health*")
-                                        .drop(SemanticAttributes.HTTP_TARGET, "/prometheus*")
+                                        .drop(SemanticAttributes.URL_PATH, "/health*")
+                                        .drop(SemanticAttributes.URL_PATH, "/prometheus*")
+                                        .drop(SemanticAttributes.URL_PATH, "/metrics*")
                                         .build()
                         )
                 )
