@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "semanticCommits": "enabled",
+  "onboardingConfigFileName": ".github/renovate.json",
+  "onboardingPrTitle": "configure renovate",
+  "prConcurrentLimit": 2,
   "extends": [
-    "local>monta-app/renovate-config",
+  "config:recommended",
     ":semanticCommitTypeAll(chore)"
   ],
   "packageRules": [
