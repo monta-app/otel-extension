@@ -15,11 +15,11 @@ repositories {
 }
 
 dependencies {
-    val otelVersion = "1.31.0"
+    val otelVersion = "2.6.0"
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:$otelVersion-alpha"))
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
     implementation("io.opentelemetry.semconv:opentelemetry-semconv")
-    implementation("io.opentelemetry.contrib:opentelemetry-samplers:$otelVersion-alpha")
+    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.37.0-alpha")
 }
 
 sourceSets {
