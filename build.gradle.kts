@@ -1,5 +1,3 @@
-val kotlinVersion: String by project
-
 plugins {
     kotlin("jvm") version "2.0.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
@@ -15,11 +13,11 @@ repositories {
 }
 
 dependencies {
-    val otelVersion = "2.6.0"
+    val otelVersion = "2.10.0"
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:$otelVersion-alpha"))
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
     implementation("io.opentelemetry.semconv:opentelemetry-semconv")
-    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.37.0-alpha")
+    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.41.0-alpha")
 }
 
 sourceSets {

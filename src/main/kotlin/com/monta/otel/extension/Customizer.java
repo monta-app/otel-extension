@@ -7,7 +7,8 @@ import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvide
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.ResourceAttributes;
-import io.opentelemetry.semconv.SemanticAttributes;
+import io.opentelemetry.semconv.ServiceAttributes;
+import io.opentelemetry.semconv.UrlAttributes;
 
 import java.util.UUID;
 
@@ -25,9 +26,9 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 resource.merge(
                         Resource.builder()
                                 .put(ResourceAttributes.SERVICE_INSTANCE_ID, UUID.randomUUID().toString())
-                                .put(ResourceAttributes.SERVICE_NAME, System.getenv("SERVICE_NAME"))
+                                .put(ServiceAttributes.SERVICE_NAME, System.getenv("SERVICE_NAME"))
                                 .put(ResourceAttributes.DEPLOYMENT_ENVIRONMENT, System.getenv("STAGE"))
-                                .put(ResourceAttributes.SERVICE_VERSION, System.getenv("BUILD_NUMBER"))
+                                .put(ServiceAttributes.SERVICE_VERSION, System.getenv("BUILD_NUMBER"))
                                 .build()
                 )
         );
@@ -38,9 +39,9 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 sdkTracerProviderBuilder.setSampler(
                         Sampler.parentBased(
                                 RuleBasedRoutingSampler.builder(SpanKind.SERVER, getSampler())
-                                        .drop(SemanticAttributes.URL_PATH, "/health*")
-                                        .drop(SemanticAttributes.URL_PATH, "/prometheus*")
-                                        .drop(SemanticAttributes.URL_PATH, "/metrics*")
+                                        .drop(UrlAttributes.URL_PATH, "/health*")
+                                        .drop(UrlAttributes.URL_PATH, "/prometheus*")
+                                        .drop(UrlAttributes.URL_PATH, "/metrics*")
                                         .build()
                         )
                 )
