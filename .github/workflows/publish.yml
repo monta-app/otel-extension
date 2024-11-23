@@ -33,3 +33,19 @@ jobs:
           asset_name: otel-extension
           tag: ${{ github.ref }}
           overwrite: true
+  create-change-log:
+    needs: publish
+    name: Create and publish change log
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Run changelog cli action
+        uses: monta-app/changelog-cli-action@main
+        with:
+          service-name: "Open Telemetry Extension"
+          github-release: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          jira-app-name: "montaapp"
+          output: "slack"
+          slack-token: ${{ secrets.SLACK_APP_TOKEN }}
+          slack-channel: "#releases,#backend-observability"
