@@ -60,7 +60,7 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 return Sampler.alwaysOff();
             }
         } else {
-            return Sampler.alwaysOn();
+            return Sampler.traceIdRatioBased(0.001);
         }
     }
 }
