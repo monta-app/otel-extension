@@ -10,6 +10,7 @@ import io.opentelemetry.semconv.ResourceAttributes;
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.UrlAttributes;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -60,7 +61,8 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 return Sampler.alwaysOff();
             }
         } else {
-            return Sampler.alwaysOn();
+            double rate = Objects.equals(System.getenv("STAGE"), "production") ? 0.1 : 1.0;
+            return Sampler.traceIdRatioBased(rate);
         }
     }
 }
