@@ -32,7 +32,7 @@ sourceSets {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
 
 ktlint {
