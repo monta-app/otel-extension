@@ -6,7 +6,6 @@ import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
-import io.opentelemetry.semconv.ResourceAttributes;
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.UrlAttributes;
 
@@ -26,9 +25,9 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
         autoConfiguration.addResourceCustomizer((resource, configProperties) ->
                 resource.merge(
                         Resource.builder()
-                                .put(ResourceAttributes.SERVICE_INSTANCE_ID, UUID.randomUUID().toString())
+                                .put("service.instance.id", UUID.randomUUID().toString())
                                 .put(ServiceAttributes.SERVICE_NAME, System.getenv("SERVICE_NAME"))
-                                .put(ResourceAttributes.DEPLOYMENT_ENVIRONMENT, System.getenv("STAGE"))
+                                .put("deployment.environment.name", System.getenv("STAGE"))
                                 .put(ServiceAttributes.SERVICE_VERSION, System.getenv("BUILD_NUMBER"))
                                 .build()
                 )

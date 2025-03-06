@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    val otelVersion = "2.10.0"
+    val otelVersion = "2.13.3"
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:$otelVersion-alpha"))
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
     implementation("io.opentelemetry.semconv:opentelemetry-semconv")
