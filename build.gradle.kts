@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    kotlin("jvm") version "2.2.0"
+    id("com.gradleup.shadow") version "8.3.8"
+    id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
 }
 
 version = "1.0.0"
