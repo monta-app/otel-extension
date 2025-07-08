@@ -1,7 +1,7 @@
 plugins {
-    kotlin("jvm") version "2.1.10"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    kotlin("jvm") version "2.2.0"
+    id("com.gradleup.shadow") version "8.3.8"
+    id("org.jlleitschuh.gradle.ktlint") version "13.0.0"
 }
 
 version = "1.0.0"
@@ -13,11 +13,11 @@ repositories {
 }
 
 dependencies {
-    val otelVersion = "2.13.3"
+    val otelVersion = "2.17.0"
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:$otelVersion-alpha"))
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
     implementation("io.opentelemetry.semconv:opentelemetry-semconv")
-    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.41.0-alpha")
+    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.47.0-alpha")
 }
 
 sourceSets {
