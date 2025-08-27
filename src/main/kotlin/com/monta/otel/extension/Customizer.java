@@ -2,14 +2,18 @@ package com.monta.otel.extension;
 
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.contrib.sampler.RuleBasedRoutingSampler;
+import io.opentelemetry.contrib.sampler.RuleBasedRoutingSamplerBuilder;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider;
 import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.UrlAttributes;
 
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -17,6 +21,9 @@ import java.util.UUID;
  * resources/META-INF/services/io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizerProvider}
  */
 public class Customizer implements AutoConfigurationCustomizerProvider {
+
+    private static final String OTEL_TRACES_EXCLUDED_URL_PATHS_ENV_VAR = "OTEL_TRACES_EXCLUDED_URL_PATHS";
+    private static final String DEFAULT_EXCLUDED_URL_PATHS = "/health*,/prometheus*,/metrics*";
 
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
@@ -33,19 +40,26 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 )
         );
 
-        // Set the sampler to be the default parentbased_always_on, but drop calls to spring
-        // boot actuator endpoints
-        autoConfiguration.addTracerProviderCustomizer((sdkTracerProviderBuilder, configProperties) ->
-                sdkTracerProviderBuilder.setSampler(
-                        Sampler.parentBased(
-                                RuleBasedRoutingSampler.builder(SpanKind.SERVER, getSampler())
-                                        .drop(UrlAttributes.URL_PATH, "/health*")
-                                        .drop(UrlAttributes.URL_PATH, "/prometheus*")
-                                        .drop(UrlAttributes.URL_PATH, "/metrics*")
-                                        .build()
-                        )
-                )
+        autoConfiguration.addTracerProviderCustomizer((builder, config) ->
+                configureSampler(builder)
         );
+    }
+
+    /**
+     * Configures the SdkTracerProviderBuilder with a rule-based routing sampler.
+     */
+    private SdkTracerProviderBuilder configureSampler(SdkTracerProviderBuilder builder) {
+        RuleBasedRoutingSamplerBuilder samplerBuilder = RuleBasedRoutingSampler.builder(SpanKind.SERVER, getSampler());
+
+        String excludedPaths = Optional.ofNullable(System.getenv(OTEL_TRACES_EXCLUDED_URL_PATHS_ENV_VAR))
+                .orElse(DEFAULT_EXCLUDED_URL_PATHS);
+
+        Arrays.stream(excludedPaths.split(","))
+                .map(String::trim)
+                .filter(path -> !path.isEmpty())
+                .forEach(path -> samplerBuilder.drop(UrlAttributes.URL_PATH, path));
+
+        return builder.setSampler(Sampler.parentBased(samplerBuilder.build()));
     }
 
     private static Sampler getSampler() {
