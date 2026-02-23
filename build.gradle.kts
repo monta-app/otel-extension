@@ -18,6 +18,8 @@ dependencies {
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
     implementation("io.opentelemetry.semconv:opentelemetry-semconv")
     implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.47.0-alpha")
+    // Dependency for HTTP response header customization
+    implementation("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
 }
 
 sourceSets {
