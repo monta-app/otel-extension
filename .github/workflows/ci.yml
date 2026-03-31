@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & verify
+    runs-on: linux-arm64
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: 'gradle'
+      - name: Check
+        run: ./gradlew --no-daemon check
+      - name: Build
+        run: ./gradlew --no-daemon build
+      - name: Shadow JAR
+        run: ./gradlew --no-daemon shadowJar
