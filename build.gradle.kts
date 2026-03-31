@@ -13,11 +13,11 @@ repositories {
 }
 
 dependencies {
-    val otelVersion = "2.17.0"
+    val otelVersion = "2.26.1"
     implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:$otelVersion-alpha"))
     implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
     implementation("io.opentelemetry.semconv:opentelemetry-semconv")
-    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.47.0-alpha")
+    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.54.0-alpha")
     // Dependency for HTTP response header customization
     implementation("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
 }
