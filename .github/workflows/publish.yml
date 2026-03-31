@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 permissions:
   contents: write
@@ -23,8 +23,6 @@ jobs:
           cache: 'gradle'
       - name: Build jar
         run: ./gradlew --no-daemon shadowJar
-      - name: Build jar
-        run: ls -a
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
