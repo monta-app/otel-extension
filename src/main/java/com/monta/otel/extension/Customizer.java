@@ -47,9 +47,15 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 configureSampler(builder)
         );
 
-        autoConfiguration.addPropertiesSupplier(() ->
-                Map.of(OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS, ForcedTracingSampler.FORCE_TRACE_HEADER)
-        );
+        // Append Force-Trace to any existing captured headers (addPropertiesCustomizer reads
+        // the resolved config, so it sees env vars and other suppliers before us).
+        autoConfiguration.addPropertiesCustomizer(config -> {
+            String existing = config.getString(OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS);
+            String value = (existing == null || existing.isBlank())
+                    ? ForcedTracingSampler.FORCE_TRACE_HEADER
+                    : existing + "," + ForcedTracingSampler.FORCE_TRACE_HEADER;
+            return Map.of(OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS, value);
+        });
     }
 
     /**
