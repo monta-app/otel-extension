@@ -1,7 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.3.21"
+    java
     id("com.gradleup.shadow") version "9.4.1"
-    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 version = "1.0.0"
@@ -26,25 +25,9 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-sourceSets {
-    main {
-        java.srcDirs("src/main/java")
-        resources.srcDirs("src/main/resources")
-    }
-    test {
-        java.srcDirs("src/test/java")
-        resources.srcDirs("src/test/resources")
-    }
-}
-
-kotlin {
-    jvmToolchain(25)
-}
-
-ktlint {
-    filter {
-        exclude("**/generated/**")
-        include("**/java/**")
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 

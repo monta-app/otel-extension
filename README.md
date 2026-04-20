@@ -44,7 +44,7 @@ Trace-Id: 4bf92f3577b34da6a3ce929d0e0e4736
 The extension can force a specific request to always be sampled, regardless of the configured sampling rate or environment.
 
 **Header:**
-- `Force-Trace: true` (also accepts `1`)
+- `Force-Trace: true`
 
 **Configuration:**
 Set `OTEL_FORCE_TRACE_HEADER_ENABLED=true` to enable forced tracing.

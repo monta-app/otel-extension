@@ -10,8 +10,6 @@ This is an OpenTelemetry SDK extension that provides custom sampling and resourc
 
 - `./gradlew build` - Build the project and run all checks
 - `./gradlew shadowJar` - Create a fat JAR for distribution (output: `build/libs/otel-extension.jar`)
-- `./gradlew ktlintCheck` - Run Kotlin linting checks
-- `./gradlew ktlintFormat` - Auto-format code according to ktlint rules
 - `./gradlew clean` - Clean build artifacts
 
 ## Usage
@@ -49,7 +47,7 @@ The extension adds these resource attributes from environment variables:
   - Defaults to `/health*,/prometheus*,/metrics*` if not set.
 - **Forced Tracing via Request Header**:
   - Enable with `OTEL_FORCE_TRACE_HEADER_ENABLED=true` (default: disabled).
-  - When enabled, any request containing the `Force-Trace: true` (or `1`) header is always sampled, bypassing all other sampling rules.
+  - When enabled, any request containing the `Force-Trace: true` header is always sampled, bypassing all other sampling rules.
   - The header is automatically configured for capture as a span attribute.
 
 ### Key Dependencies

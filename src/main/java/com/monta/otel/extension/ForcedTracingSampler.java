@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * A sampler that forces recording and sampling when the {@code Force-Trace} request header
- * is present with a value of {@code "true"} or {@code "1"}.
+ * is present with a value of {@code "true"} (case-insensitive).
  * <p>
  * When triggered, the span is always sampled regardless of the delegate sampler's decision.
  * Otherwise, sampling falls through to the delegate.
