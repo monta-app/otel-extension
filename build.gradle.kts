@@ -20,15 +20,19 @@ dependencies {
     implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.54.0-alpha")
     // Dependency for HTTP response header customization
     implementation("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 sourceSets {
     main {
-        java.srcDirs("src/main/kotlin")
+        java.srcDirs("src/main/java")
         resources.srcDirs("src/main/resources")
     }
     test {
-        java.srcDirs("src/test/kotlin")
+        java.srcDirs("src/test/java")
         resources.srcDirs("src/test/resources")
     }
 }
@@ -40,11 +44,14 @@ kotlin {
 ktlint {
     filter {
         exclude("**/generated/**")
-        include("**/kotlin/**")
+        include("**/java/**")
     }
 }
 
 tasks {
+    test {
+        useJUnitPlatform()
+    }
     shadowJar {
         archiveBaseName.set("otel-extension")
         archiveVersion.set("")

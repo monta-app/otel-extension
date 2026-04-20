@@ -19,7 +19,7 @@ public class ResponseHeaderCustomizer implements HttpServerResponseCustomizer {
 
     private static final String TRACE_ID_HEADER = "Trace-Id";
     private static final String ENABLED_ENV_VAR = "OTEL_RESPONSE_HEADERS_ENABLED";
-    private static final boolean ENABLED = "true".equalsIgnoreCase(System.getenv(ENABLED_ENV_VAR));
+    private static final boolean ENABLED = Boolean.parseBoolean(System.getenv(ENABLED_ENV_VAR));
 
     @Override
     public <RESPONSE> void customize(

@@ -14,6 +14,7 @@ The extension can be configured using the following environment variables:
 | `OTEL_TRACES_SAMPLER_ARG`        | The sampling rate to use. Overrides the default sampling rate.                                                                            | `0.1` (prod), `1.0` (non-prod) |
 | `OTEL_TRACES_EXCLUDED_URL_PATHS` | A comma-separated list of URL paths to exclude from tracing (e.g., `/health*,/metrics*`).                                                | `/health*,/prometheus*,/metrics*` |
 | `OTEL_RESPONSE_HEADERS_ENABLED`  | Set to `true` to enable trace ID injection in response headers.                                                                           | `false` |
+| `OTEL_FORCE_TRACE_HEADER_ENABLED` | Set to `true` to enable forced tracing via the `Force-Trace` request header.                                                             | `false` |
 
 ## Features
 
@@ -37,3 +38,22 @@ Trace-Id: 4bf92f3577b34da6a3ce929d0e0e4736
 - Correlation between frontend and backend traces
 - Simplified debugging of distributed systems
 - Customer support troubleshooting
+
+### Forced Tracing via Request Header
+
+The extension can force a specific request to always be sampled, regardless of the configured sampling rate or environment.
+
+**Header:**
+- `Force-Trace: true` (also accepts `1`)
+
+**Configuration:**
+Set `OTEL_FORCE_TRACE_HEADER_ENABLED=true` to enable forced tracing.
+
+**Example Request Headers:**
+```
+Force-Trace: true
+```
+
+**Use Cases:**
+- Debugging specific requests in production without changing the sampling rate
+- Integration testing against live environments
