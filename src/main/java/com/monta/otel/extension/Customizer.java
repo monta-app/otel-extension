@@ -12,9 +12,11 @@ import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.UrlAttributes;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
 
 /**
  * Note this class is wired into SPI via {@code
@@ -24,6 +26,7 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
 
     private static final String OTEL_TRACES_EXCLUDED_URL_PATHS_ENV_VAR = "OTEL_TRACES_EXCLUDED_URL_PATHS";
     private static final String DEFAULT_EXCLUDED_URL_PATHS = "/health*,/prometheus*,/metrics*";
+    private static final String OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS = "otel.instrumentation.http.server.request.captured.headers";
 
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
@@ -43,6 +46,10 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
         autoConfiguration.addTracerProviderCustomizer((builder, config) ->
                 configureSampler(builder)
         );
+
+        autoConfiguration.addPropertiesSupplier(() ->
+                Map.of(OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS, ForcedTracingSampler.FORCE_TRACE_HEADER)
+        );
     }
 
     /**
@@ -59,7 +66,7 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 .filter(path -> !path.isEmpty())
                 .forEach(path -> samplerBuilder.drop(UrlAttributes.URL_PATH, path));
 
-        return builder.setSampler(Sampler.parentBased(samplerBuilder.build()));
+        return builder.setSampler(new ForcedTracingSampler(Sampler.parentBased(samplerBuilder.build())));
     }
 
     private static Sampler getSampler() {
