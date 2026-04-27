@@ -20,7 +20,7 @@ dependencies {
     // Dependency for HTTP response header customization
     implementation("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
     testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
