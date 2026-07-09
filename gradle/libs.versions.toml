@@ -1,0 +1,22 @@
+[versions]
+shadow = "9.5.1"
+otel-instrumentation = "2.29.0-alpha"
+otel-contrib-samplers = "1.58.0-alpha"
+junit = "6.1.1"
+
+[libraries]
+opentelemetry-bom = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha", version.ref = "otel-instrumentation" }
+opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api" }
+opentelemetry-sdk = { module = "io.opentelemetry:opentelemetry-sdk" }
+opentelemetry-sdk-autoconfigure = { module = "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure" }
+opentelemetry-exporter-otlp = { module = "io.opentelemetry:opentelemetry-exporter-otlp" }
+opentelemetry-kafka-clients = { module = "io.opentelemetry.instrumentation:opentelemetry-kafka-clients-2.6" }
+opentelemetry-logback-mdc = { module = "io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0" }
+opentelemetry-semconv = { module = "io.opentelemetry.semconv:opentelemetry-semconv" }
+opentelemetry-contrib-samplers = { module = "io.opentelemetry.contrib:opentelemetry-samplers", version.ref = "otel-contrib-samplers" }
+opentelemetry-javaagent-extension-api = { module = "io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api" }
+opentelemetry-sdk-testing = { module = "io.opentelemetry:opentelemetry-sdk-testing" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
