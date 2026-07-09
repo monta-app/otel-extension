@@ -1,9 +1,9 @@
 plugins {
     java
-    id("com.gradleup.shadow") version "9.5.1"
+    alias(libs.plugins.shadow)
 }
 
-version = "1.0.0"
+version = providers.gradleProperty("version").getOrElse("1.0.0")
 group = "com.monta.otel"
 
 repositories {
@@ -12,16 +12,15 @@ repositories {
 }
 
 dependencies {
-    val otelVersion = "2.29.0"
-    implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:$otelVersion-alpha"))
-    implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
-    implementation("io.opentelemetry.semconv:opentelemetry-semconv")
-    implementation("io.opentelemetry.contrib:opentelemetry-samplers:1.58.0-alpha")
+    implementation(platform(libs.opentelemetry.bom))
+    implementation(libs.opentelemetry.sdk.autoconfigure)
+    implementation(libs.opentelemetry.semconv)
+    implementation(libs.opentelemetry.contrib.samplers)
     // Dependency for HTTP response header customization
-    implementation("io.opentelemetry.javaagent:opentelemetry-javaagent-extension-api")
+    implementation(libs.opentelemetry.javaagent.extension.api)
 
-    testImplementation("org.junit.jupiter:junit-jupiter:6.1.1")
-    testImplementation("io.opentelemetry:opentelemetry-sdk-testing")
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.opentelemetry.sdk.testing)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
