@@ -1,8 +1,8 @@
 [versions]
-shadow = "9.5.1"
+shadow = "9.6.0"
 otel-instrumentation = "2.29.0-alpha"
 otel-contrib-samplers = "1.58.0-alpha"
-junit = "6.1.1"
+junit = "6.1.2"
 
 [libraries]
 opentelemetry-bom = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha", version.ref = "otel-instrumentation" }
