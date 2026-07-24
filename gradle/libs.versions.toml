@@ -1,5 +1,5 @@
 [versions]
-shadow = "9.6.0"
+shadow = "9.6.1"
 otel-instrumentation = "2.30.0-alpha"
 otel-contrib-samplers = "1.58.0-alpha"
 junit = "6.1.2"
