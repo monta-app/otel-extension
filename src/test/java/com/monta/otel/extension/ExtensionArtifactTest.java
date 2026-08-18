@@ -1,6 +1,5 @@
 package com.monta.otel.extension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -29,7 +28,9 @@ class ExtensionArtifactTest {
     /** Java 21 is class file major version 65. */
     private static final int MAX_SUPPORTED_CLASS_FILE_MAJOR = 65;
 
-    private static final String OWN_CLASS_PREFIX = "com/monta/";
+    // Multi-release jars carry newer bytecode under META-INF/versions for runtimes that can read it;
+    // the JVM only loads those when it is new enough, so they are not a premain hazard.
+    private static final String MULTI_RELEASE_PREFIX = "META-INF/versions/";
 
     @Test
     void publishedJarRunsOnTheOldestSupportedRuntime() throws IOException {
@@ -41,7 +42,7 @@ class ExtensionArtifactTest {
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 String name = entry.getName();
-                if (!name.startsWith(OWN_CLASS_PREFIX) || !name.endsWith(".class")) {
+                if (!name.endsWith(".class") || name.startsWith(MULTI_RELEASE_PREFIX)) {
                     continue;
                 }
                 int major = readClassFileMajorVersion(jarFile, entry);
@@ -53,7 +54,8 @@ class ExtensionArtifactTest {
 
         assertTrue(
                 tooNew.isEmpty(),
-                "These classes target a newer runtime than the oldest consumer (max major "
+                "These classes, including bundled dependencies, target a newer runtime than the oldest"
+                        + " consumer (max major "
                         + MAX_SUPPORTED_CLASS_FILE_MAJOR
                         + "): "
                         + tooNew);
@@ -62,8 +64,8 @@ class ExtensionArtifactTest {
     @Test
     void jarContainsTheExtensionItself() throws IOException {
         try (JarFile jarFile = new JarFile(locateJar().toFile())) {
-            assertFalse(
-                    jarFile.stream().noneMatch(e -> e.getName().equals("com/monta/otel/extension/Customizer.class")),
+            assertTrue(
+                    jarFile.stream().anyMatch(e -> e.getName().equals("com/monta/otel/extension/Customizer.class")),
                     "shadowJar did not include Customizer, so the version check above proves nothing");
         }
     }
