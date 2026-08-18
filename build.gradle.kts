@@ -30,9 +30,19 @@ java {
     }
 }
 
+// Consumers run a mix of JDK 21 and JDK 25 runtimes. Compiling against the toolchain default
+// produced class file version 69, which fails premain on every JDK 21 service and silently
+// disables their instrumentation, so the release target is pinned to the lowest runtime in use.
+tasks.withType<JavaCompile>().configureEach {
+    options.release = 21
+}
+
 tasks {
     test {
         useJUnitPlatform()
+        // ExtensionArtifactTest inspects the published jar, so it has to exist first.
+        dependsOn(shadowJar)
+        systemProperty("otel.extension.jar", shadowJar.flatMap { it.archiveFile }.get().asFile.absolutePath)
     }
     shadowJar {
         archiveBaseName.set("otel-extension")
