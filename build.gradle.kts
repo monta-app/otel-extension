@@ -30,9 +30,8 @@ java {
     }
 }
 
-// Consumers run a mix of JDK 21 and JDK 25 runtimes. Compiling against the toolchain default
-// produced class file version 69, which fails premain on every JDK 21 service and silently
-// disables their instrumentation, so the release target is pinned to the lowest runtime in use.
+// Consumers run a mix of JDK 21 and JDK 25 runtimes. A jar compiled for 25 fails premain on 21:
+// the agent aborts and the service runs with no instrumentation and no error.
 tasks.withType<JavaCompile>().configureEach {
     options.release = 21
 }

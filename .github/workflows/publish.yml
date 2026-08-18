@@ -23,8 +23,7 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
       - name: Verify and build jar
-        # `check` also runs the jar's bytecode-version guard, so a release cannot ship a jar the
-        # JDK 21 services would fail to load.
+        # check runs the bytecode guard, so a tag cannot ship a jar JDK 21 services fail to load.
         run: ./gradlew --no-daemon check shadowJar
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2

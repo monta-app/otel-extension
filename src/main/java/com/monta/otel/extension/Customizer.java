@@ -26,9 +26,7 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
 
     private static final String OTEL_TRACES_EXCLUDED_URL_PATHS_ENV_VAR = "OTEL_TRACES_EXCLUDED_URL_PATHS";
     private static final String DEFAULT_EXCLUDED_URL_PATHS = "/health*,/prometheus*,/metrics*";
-    // The agent reads this exact key (see CapturedHttpHeadersUtil / the declarative-config bridge,
-    // which maps it to general.http.server.request_captured_headers). An unrecognised property is
-    // ignored silently, so a typo here disables header capture with no warning.
+    // The agent ignores unknown properties without warning, so a typo here disables header capture silently.
     private static final String OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS = "otel.instrumentation.http.server.capture-request-headers";
 
     @Override

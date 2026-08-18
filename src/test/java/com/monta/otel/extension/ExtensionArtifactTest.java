@@ -20,9 +20,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Guards the shape of the published jar rather than the behaviour of the code inside it.
  *
- * <p>Services consume this extension as a release asset on a mix of JDK 21 and JDK 25 runtimes. A
- * jar compiled for a newer runtime than the consumer throws {@code UnsupportedClassVersionError} in
- * premain; the agent then aborts and the JVM keeps serving with no instrumentation at all, which is
+ * <p>A jar compiled for a newer runtime than its consumer throws {@code UnsupportedClassVersionError}
+ * in premain; the agent aborts and the JVM keeps serving with no instrumentation, which stays
  * invisible until someone goes looking for traces that were never produced.
  */
 class ExtensionArtifactTest {
