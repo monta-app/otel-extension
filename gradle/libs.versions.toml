@@ -2,7 +2,7 @@
 shadow = "9.6.1"
 otel-instrumentation = "2.30.0-alpha"
 # Same release as otel-instrumentation, without the alpha suffix. Tests read this jar to check that
-# the configuration keys the extension sets are keys the agent recognises.
+# the configuration keys the extension sets are keys the OpenTelemetry Java agent recognises.
 otel-javaagent = "2.30.0"
 otel-contrib-samplers = "1.58.0-alpha"
 junit = "6.1.3"

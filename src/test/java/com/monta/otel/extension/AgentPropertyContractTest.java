@@ -16,11 +16,12 @@ import java.util.jar.JarFile;
 import org.junit.jupiter.api.Test;
 
 /**
- * Checks that the configuration keys this extension sets are keys the agent actually reads.
+ * Checks that the configuration keys this extension sets are keys the OpenTelemetry Java agent
+ * actually reads.
  *
- * <p>The agent ignores unrecognised properties without warning, so a key that no longer exists
+ * <p>The javaagent ignores unrecognised properties without warning, so a key that no longer exists
  * disables the behaviour it was meant to configure while every unit test stays green. Scanning the
- * agent jar for the literal is enough to catch that, and it does not require booting the agent.
+ * javaagent jar for the literal is enough to catch that, and it does not require booting it.
  */
 class AgentPropertyContractTest {
 
@@ -31,8 +32,8 @@ class AgentPropertyContractTest {
         assertTrue(
                 agentJarContains(CAPTURE_REQUEST_HEADERS),
                 CAPTURE_REQUEST_HEADERS
-                        + " does not appear in the agent, so it configures nothing. Check the name against"
-                        + " the agent version this extension is built for.");
+                        + " does not appear in the OpenTelemetry Java agent, so it configures nothing."
+                        + " Check the name against the javaagent version this extension is built for.");
     }
 
     private static boolean agentJarContains(String literal) throws IOException {
@@ -82,7 +83,7 @@ class AgentPropertyContractTest {
         }
         Path agent = Path.of(configured);
         if (!Files.isRegularFile(agent)) {
-            fail("Java agent jar not found at " + agent);
+            fail("OpenTelemetry Java agent jar not found at " + agent);
         }
         return agent;
     }

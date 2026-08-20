@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 
-// Resolved only so tests can read the agent jar; never on the runtime classpath.
+// Resolved only so tests can read the OpenTelemetry Java agent jar; never on the runtime classpath.
 val javaagent: Configuration by configurations.creating
 
 dependencies {
@@ -36,7 +36,7 @@ java {
 }
 
 // Consumers run a mix of JDK 21 and JDK 25 runtimes. A jar compiled for 25 fails premain on 21:
-// the agent aborts and the service runs with no instrumentation and no error.
+// the javaagent aborts and the service runs with no instrumentation and no error.
 tasks.withType<JavaCompile>().configureEach {
     options.release = 21
 }
