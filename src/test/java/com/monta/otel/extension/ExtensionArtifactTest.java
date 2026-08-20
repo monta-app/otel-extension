@@ -1,5 +1,6 @@
 package com.monta.otel.extension;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -25,8 +26,11 @@ import org.junit.jupiter.api.Test;
  */
 class ExtensionArtifactTest {
 
-    /** Java 21 is class file major version 65. */
-    private static final int MAX_SUPPORTED_CLASS_FILE_MAJOR = 65;
+    /** The oldest runtime any consumer runs. Deriving this from the build would make the check circular. */
+    private static final int OLDEST_SUPPORTED_JAVA_RELEASE = 21;
+
+    /** Class file major version is the Java release plus 44: Java 21 is 65. */
+    private static final int CLASS_FILE_MAJOR_OFFSET = 44;
 
     // Multi-release jars carry newer bytecode under META-INF/versions for runtimes that can read it;
     // the JVM only loads those when it is new enough, so they are not a premain hazard.
@@ -35,6 +39,7 @@ class ExtensionArtifactTest {
     @Test
     void publishedJarRunsOnTheOldestSupportedRuntime() throws IOException {
         Path jar = locateJar();
+        int maxMajor = OLDEST_SUPPORTED_JAVA_RELEASE + CLASS_FILE_MAJOR_OFFSET;
 
         List<String> tooNew = new ArrayList<>();
         try (JarFile jarFile = new JarFile(jar.toFile())) {
@@ -46,7 +51,7 @@ class ExtensionArtifactTest {
                     continue;
                 }
                 int major = readClassFileMajorVersion(jarFile, entry);
-                if (major > MAX_SUPPORTED_CLASS_FILE_MAJOR) {
+                if (major > maxMajor) {
                     tooNew.add(name + " (class file major " + major + ")");
                 }
             }
@@ -54,11 +59,20 @@ class ExtensionArtifactTest {
 
         assertTrue(
                 tooNew.isEmpty(),
-                "These classes, including bundled dependencies, target a newer runtime than the oldest"
-                        + " consumer (max major "
-                        + MAX_SUPPORTED_CLASS_FILE_MAJOR
+                "These classes, including bundled dependencies, target a newer runtime than the"
+                        + " oldest consumer (max major "
+                        + maxMajor
                         + "): "
                         + tooNew);
+    }
+
+    @Test
+    void buildTargetsTheOldestSupportedRuntime() {
+        assertEquals(
+                OLDEST_SUPPORTED_JAVA_RELEASE,
+                releaseTarget(),
+                "options.release must match the oldest runtime consumers run, otherwise the bytecode"
+                        + " check above would move with it and stop guarding anything");
     }
 
     @Test
@@ -80,6 +94,14 @@ class ExtensionArtifactTest {
             data.readUnsignedShort(); // minor version
             return data.readUnsignedShort();
         }
+    }
+
+    private static int releaseTarget() {
+        String configured = System.getProperty("otel.extension.release");
+        if (configured == null) {
+            fail("otel.extension.release system property is not set; see the test task in build.gradle.kts");
+        }
+        return Integer.parseInt(configured);
     }
 
     private static Path locateJar() {

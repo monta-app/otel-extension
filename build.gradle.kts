@@ -11,6 +11,9 @@ repositories {
     mavenCentral()
 }
 
+// Resolved only so tests can read the agent jar; never on the runtime classpath.
+val javaagent: Configuration by configurations.creating
+
 dependencies {
     implementation(platform(libs.opentelemetry.bom))
     implementation(libs.opentelemetry.sdk.autoconfigure)
@@ -22,6 +25,8 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.opentelemetry.sdk.testing)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    javaagent(libs.opentelemetry.javaagent)
 }
 
 java {
@@ -42,6 +47,8 @@ tasks {
         // ExtensionArtifactTest inspects the published jar, so it has to exist first.
         dependsOn(shadowJar)
         systemProperty("otel.extension.jar", shadowJar.flatMap { it.archiveFile }.get().asFile.absolutePath)
+        systemProperty("otel.extension.release", compileJava.get().options.release.get().toString())
+        systemProperty("otel.javaagent.jar", javaagent.singleFile.absolutePath)
     }
     shadowJar {
         archiveBaseName.set("otel-extension")

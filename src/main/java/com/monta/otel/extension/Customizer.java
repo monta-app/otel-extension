@@ -11,7 +11,9 @@ import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.UrlAttributes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,9 +50,15 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 configureSampler(builder)
         );
 
-        autoConfiguration.addPropertiesSupplier(() ->
-                Map.of(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS, ForcedTracingSampler.FORCE_TRACE_HEADER)
-        );
+        // A supplier is the lowest-precedence layer, so a service configuring its own captured headers
+        // would replace this value rather than add to it. Append instead.
+        autoConfiguration.addPropertiesCustomizer(config -> {
+            List<String> captured = new ArrayList<>(config.getList(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS));
+            if (captured.stream().noneMatch(ForcedTracingSampler.FORCE_TRACE_HEADER::equalsIgnoreCase)) {
+                captured.add(ForcedTracingSampler.FORCE_TRACE_HEADER);
+            }
+            return Map.of(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS, String.join(",", captured));
+        });
     }
 
     /**
