@@ -16,12 +16,10 @@ import java.util.jar.JarFile;
 import org.junit.jupiter.api.Test;
 
 /**
- * Checks that the configuration keys this extension sets are keys the OpenTelemetry Java agent
- * actually reads.
+ * Checks that the property keys this extension sets are keys the OpenTelemetry Java agent reads.
  *
- * <p>The javaagent ignores unrecognised properties without warning, so a key that no longer exists
- * disables the behaviour it was meant to configure while every unit test stays green. Scanning the
- * javaagent jar for the literal is enough to catch that, and it does not require booting it.
+ * <p>Unrecognised keys are ignored without warning, so a stale one disables the behaviour it
+ * configures while every unit test stays green.
  */
 class AgentPropertyContractTest {
 

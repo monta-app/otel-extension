@@ -28,8 +28,7 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
 
     private static final String OTEL_TRACES_EXCLUDED_URL_PATHS_ENV_VAR = "OTEL_TRACES_EXCLUDED_URL_PATHS";
     private static final String DEFAULT_EXCLUDED_URL_PATHS = "/health*,/prometheus*,/metrics*";
-    // The OpenTelemetry Java agent ignores unknown properties without warning, so a typo here
-    // disables header capture silently.
+    // The javaagent ignores unknown properties without warning, so a typo silently stops capture.
     private static final String OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS = "otel.instrumentation.http.server.capture-request-headers";
 
     @Override
@@ -51,8 +50,7 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 configureSampler(builder)
         );
 
-        // A supplier is the lowest-precedence layer, so a service configuring its own captured headers
-        // would replace this value rather than add to it. Append instead.
+        // A supplier is lowest precedence: it would replace a header list the service set, not extend it.
         autoConfiguration.addPropertiesCustomizer(config -> {
             List<String> captured = new ArrayList<>(config.getList(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS));
             if (captured.stream().noneMatch(ForcedTracingSampler.FORCE_TRACE_HEADER::equalsIgnoreCase)) {

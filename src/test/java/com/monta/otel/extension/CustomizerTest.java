@@ -24,10 +24,7 @@ class CustomizerTest {
         assertEquals("Force-Trace", resolved.get(CAPTURE_KEY));
     }
 
-    /**
-     * A service configuring its own captured headers must keep them; dropping them would trade one
-     * silent gap for another.
-     */
+    /** A service configuring its own captured headers must keep them. */
     @Test
     void keepsHeadersTheServiceAlreadyCaptures() {
         Map<String, String> resolved = applyPropertiesCustomizer(Map.of(CAPTURE_KEY, "X-Request-Source"));
@@ -42,7 +39,6 @@ class CustomizerTest {
         assertEquals("force-trace", resolved.get(CAPTURE_KEY));
     }
 
-    /** Minimal {@link ConfigProperties} that only answers the key under test. */
     private static ConfigProperties stubConfig(String capturedHeaders) {
         List<String> configured =
                 capturedHeaders.isEmpty() ? List.of() : List.of(capturedHeaders.split(","));
@@ -58,7 +54,6 @@ class CustomizerTest {
                         });
     }
 
-    /** Runs {@link Customizer} against a recording customizer and applies what it registered. */
     private static Map<String, String> applyPropertiesCustomizer(Map<String, String> existing) {
         List<Function<ConfigProperties, Map<String, String>>> customizers = new ArrayList<>();
 

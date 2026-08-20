@@ -18,12 +18,9 @@ import java.util.jar.JarFile;
 import org.junit.jupiter.api.Test;
 
 /**
- * Guards the shape of the published jar rather than the behaviour of the code inside it.
- *
- * <p>A jar compiled for a newer runtime than its consumer throws {@code UnsupportedClassVersionError}
- * in premain; the OpenTelemetry Java agent aborts and the JVM keeps serving with no
- * instrumentation, which stays invisible until someone goes looking for traces that were never
- * produced.
+ * A jar compiled for a newer runtime than its consumer throws {@code UnsupportedClassVersionError}
+ * in premain: the OpenTelemetry Java agent aborts and the JVM keeps serving, uninstrumented and
+ * without an error.
  */
 class ExtensionArtifactTest {
 
@@ -33,8 +30,7 @@ class ExtensionArtifactTest {
     /** Class file major version is the Java release plus 44: Java 21 is 65. */
     private static final int CLASS_FILE_MAJOR_OFFSET = 44;
 
-    // Multi-release jars carry newer bytecode under META-INF/versions for runtimes that can read it;
-    // the JVM only loads those when it is new enough, so they are not a premain hazard.
+    // Bytecode here is only loaded by runtimes new enough to read it, so it is not a premain hazard.
     private static final String MULTI_RELEASE_PREFIX = "META-INF/versions/";
 
     @Test

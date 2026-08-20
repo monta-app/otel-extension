@@ -11,7 +11,7 @@ repositories {
     mavenCentral()
 }
 
-// Resolved only so tests can read the OpenTelemetry Java agent jar; never on the runtime classpath.
+// Read by tests only; never on the runtime classpath.
 val javaagent: Configuration by configurations.creating
 
 dependencies {
