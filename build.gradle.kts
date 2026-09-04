@@ -11,6 +11,9 @@ repositories {
     mavenCentral()
 }
 
+// Read by tests only; never on the runtime classpath.
+val javaagent: Configuration by configurations.creating
+
 dependencies {
     implementation(platform(libs.opentelemetry.bom))
     implementation(libs.opentelemetry.sdk.autoconfigure)
@@ -22,6 +25,8 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.opentelemetry.sdk.testing)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    javaagent(libs.opentelemetry.javaagent)
 }
 
 java {
@@ -30,9 +35,20 @@ java {
     }
 }
 
+// Consumers run a mix of JDK 21 and JDK 25 runtimes. A jar compiled for 25 fails premain on 21:
+// the javaagent aborts and the service runs with no instrumentation and no error.
+tasks.withType<JavaCompile>().configureEach {
+    options.release = 21
+}
+
 tasks {
     test {
         useJUnitPlatform()
+        // ExtensionArtifactTest inspects the published jar, so it has to exist first.
+        dependsOn(shadowJar)
+        systemProperty("otel.extension.jar", shadowJar.flatMap { it.archiveFile }.get().asFile.absolutePath)
+        systemProperty("otel.extension.release", compileJava.get().options.release.get().toString())
+        systemProperty("otel.javaagent.jar", javaagent.singleFile.absolutePath)
     }
     shadowJar {
         archiveBaseName.set("otel-extension")

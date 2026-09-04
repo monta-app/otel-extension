@@ -42,7 +42,7 @@ The extension adds these resource attributes from environment variables:
   - Non-production: 100% sampling rate
   - Override with `OTEL_TRACES_SAMPLER_ARG` environment variable
 - **Endpoint Dropping Configuration**:
-  - Configure endpoints to be dropped via the `OTEL_INSTRUMENTATION_HTTP_SERVER_EXCLUDED_URL_PATHS` environment variable.
+  - Configure endpoints to be dropped via the `OTEL_TRACES_EXCLUDED_URL_PATHS` environment variable.
   - The value should be a comma-separated list of paths (e.g., `/health*,/metrics*`).
   - Defaults to `/health*,/prometheus*,/metrics*` if not set.
 - **Forced Tracing via Request Header**:

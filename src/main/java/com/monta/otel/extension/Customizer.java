@@ -11,7 +11,9 @@ import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.ServiceAttributes;
 import io.opentelemetry.semconv.UrlAttributes;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,7 +28,8 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
 
     private static final String OTEL_TRACES_EXCLUDED_URL_PATHS_ENV_VAR = "OTEL_TRACES_EXCLUDED_URL_PATHS";
     private static final String DEFAULT_EXCLUDED_URL_PATHS = "/health*,/prometheus*,/metrics*";
-    private static final String OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS = "otel.instrumentation.http.server.request.captured.headers";
+    // The javaagent ignores unknown properties without warning, so a typo silently stops capture.
+    private static final String OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS = "otel.instrumentation.http.server.capture-request-headers";
 
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
@@ -47,9 +50,14 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 configureSampler(builder)
         );
 
-        autoConfiguration.addPropertiesSupplier(() ->
-                Map.of(OTEL_HTTP_SERVER_CAPTURED_REQUEST_HEADERS, ForcedTracingSampler.FORCE_TRACE_HEADER)
-        );
+        // A supplier is lowest precedence: it would replace a header list the service set, not extend it.
+        autoConfiguration.addPropertiesCustomizer(config -> {
+            List<String> captured = new ArrayList<>(config.getList(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS));
+            if (captured.stream().noneMatch(ForcedTracingSampler.FORCE_TRACE_HEADER::equalsIgnoreCase)) {
+                captured.add(ForcedTracingSampler.FORCE_TRACE_HEADER);
+            }
+            return Map.of(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS, String.join(",", captured));
+        });
     }
 
     /**
