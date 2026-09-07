@@ -13,6 +13,6 @@ spec:
   # See lifecycle common values: https://backstage.io/docs/features/software-catalog/descriptor-format/#speclifecycle-required
   lifecycle: production
   # Name of the squad responsible for the project, e.g. sre or cpi
-  owner: network-ops
+  owner: sre
   # Name of the greater system, e.g. "solar" is a part of the home system
-  system: cpo-solutions-division
+  system: platform-division
