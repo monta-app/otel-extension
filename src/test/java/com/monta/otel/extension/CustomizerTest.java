@@ -1,6 +1,7 @@
 package com.monta.otel.extension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.opentelemetry.sdk.autoconfigure.spi.AutoConfigurationCustomizer;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 class CustomizerTest {
 
     private static final String CAPTURE_KEY = "otel.instrumentation.http.server.capture-request-headers";
+    private static final String SENSITIVE_KEY = "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters";
 
     @Test
     void capturesTheForceTraceHeader() {
@@ -39,16 +41,40 @@ class CustomizerTest {
         assertEquals("force-trace", resolved.get(CAPTURE_KEY));
     }
 
-    private static ConfigProperties stubConfig(String capturedHeaders) {
-        List<String> configured =
-                capturedHeaders.isEmpty() ? List.of() : List.of(capturedHeaders.split(","));
+    @Test
+    void redactsMontaCredentialParametersOnTopOfTheAgentDefaults() {
+        Map<String, String> resolved = applyPropertiesCustomizer(Map.of());
+
+        String configured = resolved.get(SENSITIVE_KEY);
+        assertTrue(configured.startsWith("AWSAccessKeyId,Signature,sig,X-Goog-Signature,"),
+                "the agent defaults must survive, setting the property replaces them: " + configured);
+        for (String param : Customizer.MONTA_SENSITIVE_QUERY_PARAMETERS) {
+            assertTrue(List.of(configured.split(",")).contains(param), "missing " + param + " in " + configured);
+        }
+    }
+
+    @Test
+    void keepsSensitiveParametersTheServiceAlreadyConfigured() {
+        Map<String, String> resolved = applyPropertiesCustomizer(Map.of(SENSITIVE_KEY, "card_number,token"));
+
+        List<String> configured = List.of(resolved.get(SENSITIVE_KEY).split(","));
+        assertEquals("card_number", configured.get(0), "the service's own list must come first: " + configured);
+        assertEquals(configured.size(), configured.stream().distinct().count(), "duplicates in " + configured);
+    }
+
+    private static ConfigProperties stubConfig(Map<String, String> existing) {
         return (ConfigProperties)
                 Proxy.newProxyInstance(
                         CustomizerTest.class.getClassLoader(),
                         new Class<?>[] {ConfigProperties.class},
                         (proxy, method, args) -> {
                             if ("getList".equals(method.getName())) {
-                                return CAPTURE_KEY.equals(args[0]) ? configured : List.of();
+                                String value = existing.get((String) args[0]);
+                                if (value != null) {
+                                    return List.of(value.split(","));
+                                }
+                                // getList(name, defaultValue) falls back to the caller's default
+                                return args.length > 1 ? args[1] : List.of();
                             }
                             return null;
                         });
@@ -74,7 +100,7 @@ class CustomizerTest {
 
         new Customizer().customize(recording);
 
-        ConfigProperties config = stubConfig(existing.getOrDefault(CAPTURE_KEY, ""));
+        ConfigProperties config = stubConfig(existing);
         Map<String, String> resolved = new java.util.HashMap<>(existing);
         for (Function<ConfigProperties, Map<String, String>> customizer : customizers) {
             resolved.putAll(customizer.apply(config));

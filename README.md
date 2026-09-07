@@ -39,6 +39,10 @@ Trace-Id: 4bf92f3577b34da6a3ce929d0e0e4736
 - Simplified debugging of distributed systems
 - Customer support troubleshooting
 
+### URL Query Redaction
+
+Query parameters that carry credentials are replaced with `REDACTED` in `url.query` and `url.full` before a span is exported. The extension appends Monta's list (`token`, `access_token`, `refresh_token`, `id_token`, `code`, `api_key`, `apikey`, `key`, `access_key`, `secret`, `password`, `last4`) to the agent's built-in list, and to any list a service configures itself via `otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters`. Matching is exact and case-sensitive, per the agent.
+
 ### Forced Tracing via Request Header
 
 The extension can force a specific request to always be sampled, regardless of the configured sampling rate or environment.

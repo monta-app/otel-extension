@@ -45,6 +45,7 @@ The extension adds these resource attributes from environment variables:
   - Configure endpoints to be dropped via the `OTEL_TRACES_EXCLUDED_URL_PATHS` environment variable.
   - The value should be a comma-separated list of paths (e.g., `/health*,/metrics*`).
   - Defaults to `/health*,/prometheus*,/metrics*` if not set.
+- **URL Query Redaction**: credential-carrying query parameters (`token`, `api_key`, `key`, `secret`, `password`, `last4`, ...) are redacted in span URL attributes on top of the agent's defaults; see `Customizer.MONTA_SENSITIVE_QUERY_PARAMETERS`.
 - **Forced Tracing via Request Header**:
   - Enable with `OTEL_FORCE_TRACE_HEADER_ENABLED=true` (default: disabled).
   - When enabled, any request containing the `Force-Trace: true` header is always sampled, bypassing all other sampling rules.

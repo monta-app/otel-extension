@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 class AgentPropertyContractTest {
 
     private static final String CAPTURE_REQUEST_HEADERS = "otel.instrumentation.http.server.capture-request-headers";
+    private static final String SENSITIVE_QUERY_PARAMETERS = "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters";
 
     @Test
     void theAgentRecognisesTheCaptureRequestHeadersKey() throws IOException {
@@ -32,6 +33,14 @@ class AgentPropertyContractTest {
                 CAPTURE_REQUEST_HEADERS
                         + " does not appear in the OpenTelemetry Java agent, so it configures nothing."
                         + " Check the name against the javaagent version this extension is built for.");
+    }
+
+    @Test
+    void theAgentRecognisesTheSensitiveQueryParametersKey() throws IOException {
+        assertTrue(
+                agentJarContains(SENSITIVE_QUERY_PARAMETERS),
+                SENSITIVE_QUERY_PARAMETERS
+                        + " does not appear in the OpenTelemetry Java agent, so query redaction is not configured.");
     }
 
     private static boolean agentJarContains(String literal) throws IOException {

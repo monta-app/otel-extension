@@ -30,6 +30,17 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
     private static final String DEFAULT_EXCLUDED_URL_PATHS = "/health*,/prometheus*,/metrics*";
     // The javaagent ignores unknown properties without warning, so a typo silently stops capture.
     private static final String OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS = "otel.instrumentation.http.server.capture-request-headers";
+    private static final String OTEL_SENSITIVE_QUERY_PARAMETERS = "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters";
+
+    // Setting the property replaces the javaagent's built-in list, so it is repeated here.
+    private static final List<String> AGENT_DEFAULT_SENSITIVE_QUERY_PARAMETERS =
+            List.of("AWSAccessKeyId", "Signature", "sig", "X-Goog-Signature");
+
+    // Query parameters that carry credentials in Monta services; their values are replaced with
+    // REDACTED in url.query and url.full before the span is exported.
+    static final List<String> MONTA_SENSITIVE_QUERY_PARAMETERS = List.of(
+            "token", "access_token", "refresh_token", "id_token", "code",
+            "api_key", "apikey", "key", "access_key", "secret", "password", "last4");
 
     @Override
     public void customize(AutoConfigurationCustomizer autoConfiguration) {
@@ -50,14 +61,26 @@ public class Customizer implements AutoConfigurationCustomizerProvider {
                 configureSampler(builder)
         );
 
-        // A supplier is lowest precedence: it would replace a header list the service set, not extend it.
-        autoConfiguration.addPropertiesCustomizer(config -> {
-            List<String> captured = new ArrayList<>(config.getList(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS));
-            if (captured.stream().noneMatch(ForcedTracingSampler.FORCE_TRACE_HEADER::equalsIgnoreCase)) {
-                captured.add(ForcedTracingSampler.FORCE_TRACE_HEADER);
+        // A supplier is lowest precedence: it would replace a list the service set, not extend it.
+        autoConfiguration.addPropertiesCustomizer(config -> Map.of(
+                OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS,
+                extend(config.getList(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS), List.of(ForcedTracingSampler.FORCE_TRACE_HEADER)),
+                OTEL_SENSITIVE_QUERY_PARAMETERS,
+                extend(
+                        config.getList(OTEL_SENSITIVE_QUERY_PARAMETERS, AGENT_DEFAULT_SENSITIVE_QUERY_PARAMETERS),
+                        MONTA_SENSITIVE_QUERY_PARAMETERS)
+        ));
+    }
+
+    /** The configured list plus any additions not already present, as the comma-separated form the agent parses. */
+    private static String extend(List<String> configured, List<String> additions) {
+        List<String> merged = new ArrayList<>(configured);
+        for (String addition : additions) {
+            if (merged.stream().noneMatch(addition::equalsIgnoreCase)) {
+                merged.add(addition);
             }
-            return Map.of(OTEL_HTTP_SERVER_CAPTURE_REQUEST_HEADERS, String.join(",", captured));
-        });
+        }
+        return String.join(",", merged);
     }
 
     /**
