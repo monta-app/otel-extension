@@ -26,6 +26,7 @@ dependencies {
     testImplementation(libs.opentelemetry.sdk.testing)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
+    javaagent(platform(libs.opentelemetry.bom))
     javaagent(libs.opentelemetry.javaagent)
 }
 
